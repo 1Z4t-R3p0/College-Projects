@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Results | WebGuard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="results-header">
+            <div>
+                <h1>Scan Results</h1>
+                <p id="scannedUrl" style="color: var(--text-secondary); margin-top: 0.5rem;"></p>
+            </div>
+            <a href="/" class="button" style="text-decoration: none; display: inline-block;">New Scan</a>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-label">Total Vulnerabilities</div>
+                <div id="totalVulns" class="card-value">0</div>
+            </div>
+            <div class="card high">
+                <div class="card-label">High Severity</div>
+                <div id="highVulns" class="card-value" style="color: var(--high-severity)">0</div>
+            </div>
+            <div class="card medium">
+                <div class="card-label">Medium Severity</div>
+                <div id="mediumVulns" class="card-value" style="color: var(--medium-severity)">0</div>
+            </div>
+            <div class="card low">
+                <div class="card-label">Low Severity</div>
+                <div id="lowVulns" class="card-value" style="color: var(--low-severity)">0</div>
+            </div>
+        </div>
+
+        <div id="resultsContent">
+            <div class="vuln-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vulnerability Type</th>
+                            <th>Severity</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vulnTableBody">
+                        <!-- Rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="noVulnsMessage" style="text-align: center; padding: 4rem; display: none;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🛡️</div>
+                <h3>No vulnerabilities found!</h3>
+                <p style="color: var(--text-secondary);">The target appears to have basic security measures in place.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 WebGuard Security Project. Final Year Project.</p>
+    </footer>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Load results on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const results = JSON.parse(sessionStorage.getItem('scanResults'));
+            if (!results) {
+                window.location.href = '/';
+                return;
+            }
+            displayResults(results);
+        });
+    </script>
+</body>
+
+</html>
