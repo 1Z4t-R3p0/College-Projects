@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DOMAIN=raw.bruteforce-project.com
+    depends_on:
+      - redis
+    networks:
+      - bf_network
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - bf_network
+    restart: unless-stopped
+
+networks:
+  bf_network:
+    driver: bridge
+
+volumes:
+  redis_data:

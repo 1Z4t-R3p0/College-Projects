@@ -1,0 +1,7 @@
+app/__pycache__/
+app/utils/__pycache__/
+app/middleware/__pycache__/
+logs/
+.venv/
+cookie.txt
+redis/

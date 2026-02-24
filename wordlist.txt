@@ -1,0 +1,100 @@
+password
+123456
+admin
+12345678
+qwerty
+123456789
+12345
+test
+password123
+supersecret123
+admin123
+root
+iloveyou
+ihateu
+spiderman
+!admin
+!manage
+!root
+#l@$ak#.lk;0@P
+$SRV
+$chwarzepumpe
+$secure$
+(caclulated)
+(random password)
+(see note)
+(serial number)
+(unknown)
+* * #
+*3noguru
+HP
+HPDESK
+HPLASER
+HPOFFICE
+HPOFFICE DATA
+HPONLY
+HPP187
+HPP187 SYS
+HPP189
+HPP196
+HPWORD PUB
+HR
+HTTP
+Helpdesk
+IBM
+ILMI
+IMAGEUSER
+IMEDIA
+INFO
+INGRES
+INSTANCE
+INTX3
+INVALID
+ISPMODE
+IS_$hostname
+ITF3000
+ImageFolio
+Intel
+JDE
+JETSPEED
+JMUSER
+Janitza
+KEYSCAN
+L2LDEMO
+LASER
+LASERWRITER
+LBACSYS
+LCS pwd 03
+LINK
+LOTUS
+LR-ISDN
+Last 4 digits of VIN
+LdapPassword_1
+Liebert
+MAIL
+MAILER
+MAINT
+MANAGER
+MANAGER.SYS
+MASTER
+MBIU0
+MBMANAGER
+MBWATCH
+MCUrv
+MCUser1
+MDDEMO
+MDSYS
+MFG
+MGR
+MGR.SYS
+MGWUSER
+MIGRATE
+MILLER
+MMO2
+MOREAU
+MPE
+MSHOME
+MServer
+MTRPW
+MTSSYS
+MTS_PASSWORD

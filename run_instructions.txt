@@ -1,0 +1,36 @@
+========================================================================
+Automated Brute Force Attack Detection and Prevention System
+========================================================================
+
+Project successfully generated at:
+/home/node/Freelance/Projects/Automated-Brute-Force-Detection
+
+To run the application:
+1. Navigate to the project directory:
+   cd /home/node/Freelance/Projects/Automated-Brute-Force-Detection
+
+2. Start the Docker containers in the background:
+   docker compose up -d
+
+3. The vulnerable web application will be accessible at:
+   http://localhost:8080
+
+To simulate a brute force attack:
+1. Ensure the application is running via Docker.
+2. Ensure you have Hydra installed (`sudo apt install hydra` if not).
+3. Run the automated simulation script:
+   ./attack.sh
+
+To view the detection logs:
+   cat logs/attack.log
+Or follow the container logs:
+   docker compose logs -f web
+
+------------------------------------------------------------------------
+Security Features Implemented:
+- Basic username/password login system.
+- Redis-backed rate limiting (5 attempts per user -> HTTP 429).
+- Fail2Ban style IP blocking mechanism (50 total failed attempts -> HTTP 404).
+- 15-minute automatic IP unblock.
+- File-based attack logging.
+------------------------------------------------------------------------

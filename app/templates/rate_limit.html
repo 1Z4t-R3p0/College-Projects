@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Limit Exceeded | {{ domain }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="rate-limit-page">
+    <div class="block-container">
+        <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+        <h2>Rate Limit Exceeded</h2>
+        <div class="alert warning">
+            Rate limit exceeded: Only 5 requests per user. Please try again after 15 minutes.
+        </div>
+        <p>Your access has been restricted to protect this application against brute force attacks.</p>
+        <p>Please wait before trying again.</p>
+    </div>
+</body>
+
+</html>
