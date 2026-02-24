@@ -62,10 +62,10 @@ invoke_bruteforce() {
             echo -e "${DK_GRAY} done${NC}"
         done
     else
-        warn "sshpass not found. Simulating via logger (Linux/WSL mode)..."
+        warn "sshpass not found. Simulating via direct manager injection (Linux/WSL mode)..."
         for (( i=1; i<=$BRUTE_FORCE_ATTEMPTS; i++ )); do
             echo -e "${DK_GRAY}  Logging attempt $i/$BRUTE_FORCE_ATTEMPTS...${NC}"
-            logger -t sshd "Failed password for $TARGET_USER from 192.168.99.1 port $((40000 + RANDOM % 20000)) ssh2"
+            docker exec wazuh.manager python3 -c "import socket; s=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); s.connect('/var/ossec/queue/sockets/queue'); s.send(b'1:syslog:Feb 25 12:00:00 wazuh-agent sshd: Failed password for $TARGET_USER from 192.168.99.1 port 54321 ssh2'); s.close()"
             sleep 0.3
         done
     fi
@@ -84,22 +84,22 @@ invoke_privilege_escalation() {
     info "SCENARIO 2: Privilege Escalation Attempts"
     echo -e "${CYAN}══════════════════════════════════════════${NC}"
 
-    warn "Injecting privilege escalation event patterns into syslog..."
+    warn "Injecting privilege escalation event patterns directly into manager socket..."
 
     attack "sudo su - root attempt..."
-    logger -t sudo "USER=student : TTY=pts/0 ; PWD=/home/student ; USER=root ; COMMAND=/bin/bash"
+    docker exec wazuh.manager python3 -c "import socket; s=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); s.connect('/var/ossec/queue/sockets/queue'); s.send(b'1:syslog:Feb 25 12:00:00 wazuh-agent sudo: student : TTY=pts/0 ; PWD=/home/student ; USER=root ; COMMAND=/bin/bash'); s.close()"
     sleep 0.5
 
     attack "sudo bash execution..."
-    logger -t sudo "USER=testuser : TTY=pts/1 ; PWD=/tmp ; USER=root ; COMMAND=/bin/bash"
+    docker exec wazuh.manager python3 -c "import socket; s=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); s.connect('/var/ossec/queue/sockets/queue'); s.send(b'1:syslog:Feb 25 12:00:00 wazuh-agent sudo: testuser : TTY=pts/1 ; PWD=/tmp ; USER=root ; COMMAND=/bin/bash'); s.close()"
     sleep 0.5
 
     attack "Logging setuid execution pattern..."
-    logger -t exploit "Detected setuid execution: /usr/bin/pkexec by user student (uid=1001)"
+    docker exec wazuh.manager python3 -c "import socket; s=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); s.connect('/var/ossec/queue/sockets/queue'); s.send(b'1:syslog:Feb 25 12:00:00 wazuh-agent exploit: Detected setuid execution: /usr/bin/pkexec by user student (uid=1001)'); s.close()"
     sleep 0.5
 
     attack "Logging /etc/shadow read attempt..."
-    logger -t attack "Unauthorized read attempt on /etc/shadow by uid=1001"
+    docker exec wazuh.manager python3 -c "import socket; s=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM); s.connect('/var/ossec/queue/sockets/queue'); s.send(b'1:syslog:Feb 25 12:00:00 wazuh-agent attack: Unauthorized read attempt on /etc/shadow by uid=1001'); s.close()"
     sleep 0.5
 
     success "Privilege escalation events injected!"
