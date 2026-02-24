@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time SOC Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --danger: #f85149;
+            --warning: #d29922;
+            --success: #3fb950;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .branding h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        .branding h1 .dot {
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-right: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .status-pill {
+            background: rgba(63, 185, 80, 0.1);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(63, 185, 80, 0.2);
+            display: flex;
+            align-items: center;
+        }
+
+        .pulse-icon {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .alert-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #21262d;
+            padding: 14px 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .stamp {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stamp-brute {
+            background: rgba(248, 81, 73, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+        }
+
+        .stamp-priv {
+            background: rgba(210, 153, 34, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(210, 153, 34, 0.2);
+        }
+
+        .stamp-fim {
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+        }
+
+        .stamp-default {
+            background: rgba(139, 148, 158, 0.1);
+            color: var(--text-dim);
+            border: 1px solid rgba(139, 148, 158, 0.2);
+        }
+
+        .sev-pill {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .sev-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .empty-state {
+            padding: 60px;
+            text-align: center;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .ip {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="branding">
+                <h1>
+                    <div class="dot"></div>Real-Time SOC Monitoring & Incident Response
+                </h1>
+            </div>
+            <div class="status-pill">
+                <div class="pulse-icon"></div> SENSORS ONLINE | INGESTING
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="alert-panel">
+                <table id="alertTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 160px;">Timestamp</th>
+                            <th style="width: 180px;">Incident Type</th>
+                            <th>Description</th>
+                            <th style="width: 140px;">Source IP</th>
+                            <th style="width: 100px;">Severity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">Waiting for security events...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                const alerts = await response.json();
+                const container = document.getElementById('alertBody');
+
+                if (alerts.length === 0) {
+                    container.innerHTML = '<tr><td colspan="5" class="empty-state">No high-risk events detected in the last hour.</td></tr>';
+                    return;
+                }
+
+                container.innerHTML = alerts.map(a => {
+                    let stampClass = 'stamp-default';
+                    if (a.attack_type === 'SSH Brute Force') stampClass = 'stamp-brute';
+                    else if (a.attack_type === 'Privilege Escalation') stampClass = 'stamp-priv';
+                    else if (a.attack_type === 'File Integrity') stampClass = 'stamp-fim';
+
+                    let dotColor = 'var(--success)';
+                    let textColor = 'var(--success)';
+                    if (a.level >= 10) { dotColor = 'var(--danger)'; textColor = 'var(--danger)'; }
+                    else if (a.level >= 5) { dotColor = 'var(--warning)'; textColor = 'var(--warning)'; }
+
+                    const time = new Date(a.timestamp).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                    return `
+                        <tr>
+                            <td class="timestamp" style="color: var(--text-dim)">${time}</td>
+                            <td><span class="stamp ${stampClass}">${a.attack_type}</span></td>
+                            <td style="font-weight: 600;">${a.description}</td>
+                            <td class="ip">${a.srcip}</td>
+                            <td>
+                                <div class="sev-pill">
+                                    <div class="sev-dot" style="background: ${dotColor}"></div>
+                                    <span style="color: ${textColor}">Lv.${a.level}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error("Monitor sync failed:", e);
+            }
+        }
+
+        fetchAlerts();
+        setInterval(fetchAlerts, 2000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<!-- Custom Wazuh Rules for SOC Monitoring -->
+<!-- Place this file at /var/ossec/etc/rules/local_rules.xml -->
+
+<group name="local,soc_custom,">
+
+  <!-- ============================================================ -->
+  <!--  SSH BRUTE-FORCE DETECTION                                  -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100100: Increase counter on failed SSH auth -->
+  <rule id="100100" level="5">
+    <if_sid>5760</if_sid>
+    <description>SSH authentication failure (brute-force tracking)</description>
+    <group>authentication_failure,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+  </rule>
+
+  <!-- Rule 100200: Brute-force alert after 10 failures in 60s -->
+  <rule id="100200" level="12" frequency="10" timeframe="60">
+    <if_matched_sid>100100</if_matched_sid>
+    <same_source_ip />
+    <description>SSH brute-force attack detected: $(srcip) — 10+ failures in 60s</description>
+    <group>authentication_failures,pci_dss_10.2.4,pci_dss_10.2.5,gdpr_IV_32.2,hipaa_164.312.b,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100201: Brute-force alert after 5 failures (lower threshold) -->
+  <rule id="100201" level="10" frequency="5" timeframe="120">
+    <if_matched_sid>100100</if_matched_sid>
+    <same_source_ip />
+    <description>Possible SSH brute-force: $(srcip) — 5+ failures in 120s</description>
+    <group>authentication_failures,pci_dss_10.2.4,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  REVERSE SHELL / CMD INJECTION DETECTION                    -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100300: Reverse shell via bash -->
+  <rule id="100300" level="15">
+    <if_group>syslog,</if_group>
+    <match>bash -i &gt;&amp; /dev/tcp|0&gt;&amp;1|exec /bin/sh|nc -e /bin/</match>
+    <description>Reverse shell attempt detected via bash</description>
+    <group>attack,rootkit,pci_dss_6.6,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100301: Reverse shell via Python -->
+  <rule id="100301" level="15">
+    <if_group>syslog,</if_group>
+    <match>python -c.*socket.*connect|python3 -c.*socket</match>
+    <description>Python reverse shell attempt detected</description>
+    <group>attack,rootkit,pci_dss_6.6,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100302: Netcat/mkfifo reverse shell -->
+  <rule id="100302" level="15">
+    <if_group>syslog,</if_group>
+    <match>mkfifo /tmp|rm /tmp/f;mkfifo|mknod /tmp/pipe</match>
+    <description>Netcat/FIFO reverse shell pattern detected</description>
+    <group>attack,rootkit,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  SUSPICIOUS FILE MODIFICATION                               -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100400: Critical file modified -->
+  <rule id="100400" level="10">
+    <if_sid>550</if_sid>
+    <match>/etc/passwd|/etc/shadow|/etc/sudoers|/etc/crontab</match>
+    <description>Critical system file modified: $(file)</description>
+    <group>syscheck,syscheck_entry_modified,pci_dss_11.5,gpg13_4.13,gdpr_IV_35.7.d,hipaa_164.312.b,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100401: New file added to /tmp with executable bit -->
+  <rule id="100401" level="9">
+    <if_sid>554</if_sid>
+    <match>/tmp/</match>
+    <description>New file added to /tmp: $(file) — Potential dropper or payload</description>
+    <group>syscheck,syscheck_entry_added,</group>
+  </rule>
+
+  <!-- Rule 100402: /etc/cron modified -->
+  <rule id="100402" level="11">
+    <if_sid>550</if_sid>
+    <match>/etc/cron|/var/spool/cron</match>
+    <description>Crontab modified — Potential persistence mechanism: $(file)</description>
+    <group>syscheck,syscheck_entry_modified,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  DOCKER CONTAINER PRIVILEGE ESCALATION                      -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100500: Container running as root with privileged flag -->
+  <rule id="100500" level="13">
+    <if_group>docker,</if_group>
+    <match>privileged.*true|--privileged</match>
+    <description>Docker container started in privileged mode — escalation risk</description>
+    <group>docker,attack,pci_dss_10.6.1,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100501: Docker socket mounted in container -->
+  <rule id="100501" level="14">
+    <if_group>docker,</if_group>
+    <match>/var/run/docker.sock</match>
+    <description>Docker socket mounted inside container — container escape risk</description>
+    <group>docker,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Rule 100502: Container exec command executed -->
+  <rule id="100502" level="8">
+    <if_group>docker,</if_group>
+    <match>docker exec|exec_create|exec_start</match>
+    <description>Command executed inside running Docker container: $(hostname)</description>
+    <group>docker,audit_command,</group>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  PORT SCANNING DETECTION (via Suricata / syslog)            -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100600: Port scan from Suricata EVE alert -->
+  <rule id="100600" level="9">
+    <if_group>ids,</if_group>
+    <match>ET SCAN|NMAP|Port Scan|Masscan|portscan</match>
+    <description>Port scan detected by IDS (Suricata): $(srcip)</description>
+    <group>ids,recon,pci_dss_11.4,</group>
+  </rule>
+
+  <!-- Rule 100601: Multiple connection attempts to closed ports -->
+  <rule id="100601" level="7" frequency="20" timeframe="30">
+    <if_matched_sid>100600</if_matched_sid>
+    <same_source_ip />
+    <description>Aggressive port scan: $(srcip) hitting 20+ ports in 30s</description>
+    <group>ids,recon,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  MALWARE HASH DETECTION (via VirusTotal integration)        -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100700: Known malware hash detected (FIM + VT) -->
+  <rule id="100700" level="15">
+    <if_sid>87105</if_sid>
+    <description>Malware file detected by VirusTotal hash lookup: $(file)</description>
+    <group>malware,virustotal,attack,pci_dss_11.4,gdpr_IV_35.7.d,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- ============================================================ -->
+  <!--  SUDO / ROOT PRIVILEGE ABUSE                                -->
+  <!-- ============================================================ -->
+
+  <!-- Rule 100800: Sudo command used -->
+  <rule id="100800" level="6">
+    <if_sid>5402</if_sid>
+    <description>Sudo command executed by user: $(srcuser)</description>
+    <group>syslog,sudo,audit_command,</group>
+  </rule>
+
+  <!-- Rule 100801: Sudo su to root -->
+  <rule id="100801" level="10">
+    <if_sid>5402</if_sid>
+    <match>sudo su|sudo -s|sudo bash|sudo sh</match>
+    <description>Privilege escalation via sudo to root shell by: $(srcuser)</description>
+    <group>syslog,sudo,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+</group>

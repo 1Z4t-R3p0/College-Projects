@@ -1,0 +1,115 @@
+%YAML 1.1
+---
+# Suricata configuration for SOC monitoring
+
+max-pending-packets: 1024
+runmode: auto
+verbose: no
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: /var/log/suricata/eve.json
+      community-id: true
+      community-id-seed: 0
+      types:
+        - alert:
+            payload: yes
+            payload-buffer-size: 4kb
+            payload-printable: yes
+            packet: yes
+            metadata: yes
+            http-body: yes
+            http-body-printable: yes
+            tagged-packets: yes
+        - anomaly:
+            enabled: yes
+            types:
+              packet: yes
+              layer: yes
+              stream: yes
+        - http:
+            extended: yes
+        - dns:
+            query: yes
+            answer: yes
+        - tls:
+            extended: yes
+        - files:
+            force-magic: yes
+        - smtp: {}
+        - ftp: {}
+        - rdp: {}
+        - ssh: {}
+        - flow: {}
+        - stats:
+            totals: yes
+            threads: no
+            deltas: no
+
+  - fast:
+      enabled: yes
+      filename: /var/log/suricata/fast.log
+      append: yes
+
+  - stats:
+      enabled: yes
+      filename: /var/log/suricata/stats.log
+      append: yes
+      totals: yes
+      threads: no
+
+af-packet:
+  - interface: default
+
+logging:
+  default-log-level: notice
+  outputs:
+    - console:
+        enabled: yes
+    - file:
+        enabled: yes
+        level: info
+        filename: /var/log/suricata/suricata.log
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+
+app-layer:
+  protocols:
+    rdp:
+      enabled: yes
+    ftp:
+      enabled: yes
+      memcap: 64mb
+    ssh:
+      enabled: yes
+    smtp:
+      enabled: yes
+    smb:
+      enabled: yes
+    dns:
+      tcp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+      udp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+    http:
+      enabled: yes
+      libhtp:
+        default-config:
+          personality: IDS
+          request-body-limit: 100kb
+          response-body-limit: 100kb
+
+threading:
+  set-cpu-affinity: no
+  detect-thread-ratio: 1.0
