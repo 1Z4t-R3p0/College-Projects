@@ -45,7 +45,7 @@ if (-not (Test-Path $PROJECT_DIR)) {
 }
 
 # 4. Run Docker Compose
-Set-Location $PROJECT_DIR
+Set-Location "$PROJECT_DIR\Automated-Brute-Force-Detection"
 Write-Host "Starting Automated Brute Force Detection System..." -ForegroundColor Green
 docker compose up -d
 
