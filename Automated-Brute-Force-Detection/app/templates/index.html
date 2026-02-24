@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Login | {{ domain }}</title>
+    <title>SOC Authentication Portal | {{ domain }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
     <div class="login-container">
-        <h2>Admin Login</h2>
-        <p class="subtitle">Protected by Automated Brute Force Detection</p>
+        <h2>Authentication Portal</h2>
+        <p class="subtitle">Protected by RealTime SOC Detection Engine</p>
         
         {% if error %}
             <div class="alert error">{{ error }}</div>

@@ -17,6 +17,10 @@ DOMAIN = os.getenv('DOMAIN', 'raw.bruteforce-project.com')
 
 @app.before_request
 def check_blocked():
+    # Allow CSS and static files to load even if blocked, otherwise the UI breaks
+    if request.path.startswith('/static/'):
+        return
+
     ip = request.remote_addr
     if is_ip_blocked(ip):
         logger.warning(f"Blocked IP attempted access: {ip}")

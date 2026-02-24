@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            font-size: 50px;
-            color: #d9534f;
-        }
-        p {
-            font-size: 20px;
-        }
-    </style>
+    <title>IP Blocked</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
-<body>
-    <h1>404 Not Found</h1>
-    <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+
+<body class="blocked-page">
+    <div class="block-container">
+        <div style="font-size: 48px; margin-bottom: 16px;">⛔</div>
+        <h2>IP Blocked</h2>
+        <p class="subtitle">Access Permanently Restricted</p>
+        <div class="alert error">
+            Too many failed attempts detected from your IP address.
+        </div>
+        <p>Your access has been blocked to protect this application against brute force attacks.</p>
+        <p>Please contact an administrator to unblock your IP address.</p>
+    </div>
 </body>
+
 </html>

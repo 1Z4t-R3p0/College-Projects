@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rate Limit Exceeded | {{ domain }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 
 <body class="rate-limit-page">
     <div class="block-container">
-        <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
         <h2>Rate Limit Exceeded</h2>
+        <p class="subtitle">Access Temporarily Restricted</p>
         <div class="alert warning">
             Rate limit exceeded: Only 5 requests per user. Please try again after 15 minutes.
         </div>

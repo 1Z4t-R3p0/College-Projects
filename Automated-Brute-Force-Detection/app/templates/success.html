@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | {{ domain }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
-<body class="dashboard">
+
+<body>
     <div class="welcome-container">
-        <h1>Welcome, {{ username }}!</h1>
+        <h2>Welcome, {{ username }}!</h2>
+        <p class="subtitle">Your secure session is active.</p>
         <div class="alert success">
-            You have successfully logged in.
+            Authentication successful.
         </div>
         <a href="/" class="btn-logout">Logout</a>
     </div>
 </body>
+
 </html>

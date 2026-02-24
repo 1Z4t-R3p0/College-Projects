@@ -10,6 +10,8 @@ services:
       - DOMAIN=raw.bruteforce-project.com
     depends_on:
       - redis
+    volumes:
+      - ./logs:/app/logs
     networks:
       - bf_network
     restart: unless-stopped

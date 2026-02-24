@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Denied | {{ domain }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
+
 <body class="blocked-page">
     <div class="block-container">
-        <h1>ACCESS BLOCKED</h1>
+        <div style="font-size: 48px; margin-bottom: 16px;">🛑</div>
+        <h2>Access Blocked</h2>
+        <p class="subtitle">Suspicious Activity Detected</p>
         <div class="alert danger">
-            Your IP has been temporarily blocked due to suspicious activity.
+            Your IP has been temporarily blocked.
         </div>
-        <p>Our Automated Brute Force Detection system has identified an abnormal number of failed login attempts from your IP address.</p>
+        <p>Our Automated Brute Force Detection system has identified an abnormal number of failed login attempts from
+            your IP address.</p>
         <p>The block will automatically expire in 10 minutes. Any further attempts will reset the timer.</p>
     </div>
 </body>
+
 </html>
