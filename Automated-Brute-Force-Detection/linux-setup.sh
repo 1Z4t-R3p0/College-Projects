@@ -52,7 +52,7 @@ fi
 # 4. Run Docker Compose
 cd "$PROJECT_DIR/Automated-Brute-Force-Detection"
 echo -e "\e[32mStarting Automated Brute Force Detection System...\e[0m"
-sudo docker compose up -d
+docker compose up -d
 
 echo ""
 echo -e "\e[32m========================================================\e[0m"
