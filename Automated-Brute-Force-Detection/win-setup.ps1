@@ -27,13 +27,6 @@ if (-not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
     exit
 }
 
-# Check if Docker daemon is running
-docker info > $null 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Docker is not running! Please start Docker Desktop and run this script again." -ForegroundColor Red
-    exit
-}
-
 # 3. Clone or Update Project
 if (-not (Test-Path $PROJECT_DIR)) {
     Write-Host "Cloning project repository..." -ForegroundColor Green
