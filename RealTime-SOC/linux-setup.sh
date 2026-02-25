@@ -22,8 +22,13 @@ echo ""
 # ── 1. Install Docker if missing ──────────────────────────
 if ! command -v docker &> /dev/null; then
     echo -e "${YELLOW}[*] Docker not found. Installing...${NC}"
-    curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
-    sh /tmp/get-docker.sh
+    if grep -iq "kali" /etc/os-release 2>/dev/null; then
+        echo -e "${YELLOW}[*] Detected Kali Linux. Installing via apt...${NC}"
+        sudo apt-get update -qq && sudo apt-get install -y docker.io docker-compose
+    else
+        curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+        sh /tmp/get-docker.sh
+    fi
     sudo usermod -aG docker "$USER"
     echo -e "${GREEN}[+] Docker installed.${NC}"
 else
