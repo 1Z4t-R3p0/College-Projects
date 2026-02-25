@@ -64,7 +64,7 @@ services:
       context: ./soc-monitor
     container_name: soc.monitor
     ports:
-      - "8080:5000"
+      - "8081:5000"
     volumes:
       - wazuh-manager-logs:/app/logs:ro
     depends_on:
