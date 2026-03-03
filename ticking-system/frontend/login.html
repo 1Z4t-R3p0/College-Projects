@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cloud Support Ticket Classification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            text-align: center;
+        }
+
+        .auth-container h2 {
+            border: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-links {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="container auth-container">
+        <header>
+            <h1>Welcome Back</h1>
+            <p>Login to your account</p>
+        </header>
+
+        <main>
+            <section class="card glass">
+                <form id="login-form">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter username">
+                    </div>
+                    <div class="form-group" style="text-align: left;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" id="submit-btn">
+                        <span class="btn-text">Login</span>
+                        <div class="loader hidden"></div>
+                    </button>
+                    <div id="form-message" class="hidden"></div>
+                </form>
+                <div class="auth-links">
+                    Don't have an account? <a href="register.html">Register</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const AWS_API_GATEWAY_URL = '';
+        const API_URL = AWS_API_GATEWAY_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000/api' : '/api');
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            const btn = document.getElementById('submit-btn');
+            const loader = btn.querySelector('.loader');
+            const btnText = btn.querySelector('.btn-text');
+            const formMessage = document.getElementById('form-message');
+
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+            formMessage.classList.add('hidden');
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Login failed');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('username', username);
+
+                // If admin, redirect to admin page, else index
+                if (username === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                formMessage.textContent = error.message;
+                formMessage.className = 'message-error';
+                formMessage.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                loader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

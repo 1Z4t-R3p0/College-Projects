@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Support Ticket Classification System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div style="text-align: left;">
+                <h1>Cloud Support System</h1>
+                <p>Welcome to your personal support portal.</p>
+            </div>
+            <div class="user-badge" id="user-info"
+                style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--card-border); gap: 1rem; display: flex; align-items: center;">
+                <span>Loading...</span>
+            </div>
+        </header>
+
+        <main class="grid">
+            <section class="card glass">
+                <h2>Submit new ticket</h2>
+                <form id="ticket-form">
+                    <div class="form-group">
+                        <label for="title">Issue Title</label>
+                        <input type="text" id="title" name="title" required placeholder="e.g. Cannot connect to VPN">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Detailed Description</label>
+                        <textarea id="description" name="description" rows="5" required
+                            placeholder="Provide more details about your problem..."></textarea>
+                    </div>
+                    <button type="submit" id="submit-btn">
+                        <span class="btn-text">Submit Ticket</span>
+                        <div class="loader hidden"></div>
+                    </button>
+                    <div id="form-message" class="hidden"></div>
+                </form>
+            </section>
+
+            <section class="card glass">
+                <h2>Your Recent Tickets</h2>
+                <div class="tickets-header">
+                    <span>Ticket Details</span>
+                    <span>AI Category</span>
+                </div>
+                <div id="tickets-list" class="tickets-list">
+                    <div class="loading-state">Loading recent tickets...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

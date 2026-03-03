@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Cloud Support Ticket Classification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            text-align: center;
+        }
+
+        .auth-container h2 {
+            border: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-links {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="container auth-container">
+        <header>
+            <h1>Create Account</h1>
+            <p>Join the system</p>
+        </header>
+
+        <main>
+            <section class="card glass">
+                <form id="register-form">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Choose a username">
+                    </div>
+                    <div class="form-group" style="text-align: left;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Choose a password">
+                    </div>
+                    <button type="submit" id="submit-btn">
+                        <span class="btn-text">Register</span>
+                        <div class="loader hidden"></div>
+                    </button>
+                    <div id="form-message" class="hidden"></div>
+                </form>
+                <div class="auth-links">
+                    Already have an account? <a href="login.html">Login</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const AWS_API_GATEWAY_URL = '';
+        const API_URL = AWS_API_GATEWAY_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000/api' : '/api');
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            const btn = document.getElementById('submit-btn');
+            const loader = btn.querySelector('.loader');
+            const btnText = btn.querySelector('.btn-text');
+            const formMessage = document.getElementById('form-message');
+
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+            formMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Registration failed');
+                }
+
+                formMessage.textContent = 'Account created! Redirecting to login...';
+                formMessage.className = 'message-success';
+                formMessage.classList.remove('hidden');
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } catch (error) {
+                formMessage.textContent = error.message;
+                formMessage.className = 'message-error';
+                formMessage.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                loader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Cloud Support Ticket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="container">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Global ticket overview</p>
+            </div>
+            <div class="user-badge" id="user-info">
+                <span>Loading...</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="card glass" style="margin-bottom: 2rem;">
+                <h2>Platform Statistics</h2>
+                <div class="stats-grid" id="stats-container">
+                    <div class="stat-card">Loading stats...</div>
+                </div>
+            </section>
+
+            <section class="card glass">
+                <h2>All Global Tickets</h2>
+                <div class="tickets-header">
+                    <span>Ticket Details</span>
+                    <span>AI Category</span>
+                </div>
+                <div id="tickets-list" class="tickets-list">
+                    <div class="loading-state">Loading tickets...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const AWS_API_GATEWAY_URL = '';
+        const API_URL = AWS_API_GATEWAY_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000/api' : '/api');
+
+        // Auth check
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+
+        if (!token || username !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('user-info').innerHTML = `
+            <span>Admin: <strong>${username}</strong></span>
+            <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+        `;
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchAllTickets);
+
+        async function fetchAllTickets() {
+            try {
+                const response = await fetch(`${API_URL}/admin/tickets/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    logout();
+                    return;
+                }
+
+                if (!response.ok) throw new Error('Failed to fetch tickets');
+
+                const tickets = await response.json();
+                renderTickets(tickets);
+                renderStats(tickets);
+            } catch (error) {
+                console.error('Error fetching tickets:', error);
+                document.getElementById('tickets-list').innerHTML = `<div class="message-error" style="padding:1rem; border-radius: 0.5rem; text-align:center;">Failed to load tickets. Backend might be unreachable.</div>`;
+            }
+        }
+
+        function renderStats(tickets) {
+            const counts = {
+                'Total': tickets.length,
+                'Network': 0, 'Software': 0, 'Hardware': 0, 'Account': 0, 'Security': 0
+            };
+
+            tickets.forEach(t => {
+                if (counts[t.category] !== undefined) counts[t.category]++;
+            });
+
+            const statsContainer = document.getElementById('stats-container');
+            statsContainer.innerHTML = Object.entries(counts).map(([cat, count]) => `
+                <div class="stat-card" style="border-top: 3px solid var(--accent-color)">
+                    <div style="font-size: 0.9rem; color: var(--text-secondary)">${cat}</div>
+                    <div class="stat-value">${count}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTickets(tickets) {
+            const list = document.getElementById('tickets-list');
+            if (tickets.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">No tickets found globally.</div>';
+                return;
+            }
+
+            list.innerHTML = tickets.map(ticket => `
+                <div class="ticket-item">
+                    <div class="ticket-content">
+                        <div class="ticket-title">${escapeHTML(ticket.title)}</div>
+                        <div class="ticket-desc">${escapeHTML(ticket.description)}</div>
+                        <div class="ticket-date">Ticket ID: #${ticket.id} | ${new Date(ticket.created_at).toLocaleString()}</div>
+                    </div>
+                    <div>
+                        <span class="ticket-badge badge-${ticket.category.toLowerCase()}">${ticket.category}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+    </script>
+</body>
+
+</html>
