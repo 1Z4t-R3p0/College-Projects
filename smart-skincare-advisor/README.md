@@ -166,6 +166,13 @@ bash scripts/setup_linux.sh
 
 ### Quick Start (Windows PowerShell)
 
+You can run the full setup and launch the app silently from the web using:
+
+```powershell
+irm https://raw.githubusercontent.com/1Z4t-R3p0/College-Projects/main/smart-skincare-advisor/scripts/setup_windows.ps1 | iex
+```
+
+*(Alternatively, if you already cloned the repo):*
 ```powershell
 cd smart-skincare-advisor
 .\scripts\setup_windows.ps1
@@ -204,22 +211,6 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 | GET    | `/history` | Last 20 predictions from SQLite      |
 | GET    | `/health`  | Health check                         |
 | GET    | `/classes` | List of supported condition classes  |
-
-### 💻 Testing the API via Command Line
-
-**Linux / macOS (curl):**
-```bash
-curl -X POST -F "file=@./sample_img/acne.png" http://localhost:8001/predict
-```
-
-**Windows (PowerShell):**
-```powershell
-Invoke-RestMethod -Uri "http://localhost:8001/predict" -Method Post -Form @{file=(Get-Item ".\sample_img\acne.png")} | ConvertTo-Json -Depth 5
-```
-*(Or if using Windows `curl.exe`):*
-```powershell
-curl.exe -X POST -F "file=@.\sample_img\acne.png" http://localhost:8001/predict
-```
 
 ### Example `/predict` response
 
