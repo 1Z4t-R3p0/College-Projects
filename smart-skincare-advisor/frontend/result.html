@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Result — Smart Skin Care Advisor</title>
+  <meta name="description" content="View your skin condition analysis result and personalised skincare recommendations." />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="logo-icon">🔬</div>
+      SkinCare AI
+    </div>
+    <ul class="navbar-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/upload">Analyse</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Result Section ─────────────────────────────────── -->
+  <div class="result-section">
+
+    <!-- Back link -->
+    <a href="/upload" class="btn btn-secondary" style="margin-bottom:1.5rem;display:inline-flex;">← New Analysis</a>
+
+    <!-- Header -->
+    <div class="result-header animate-up" id="resultHeader">
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.3rem;">Detected Condition</p>
+      <h1 id="conditionTitle" style="font-size:2rem;margin-bottom:0.4rem;">Loading…</h1>
+      <div id="conditionBadge"></div>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="results-grid animate-up" style="animation-delay:0.1s;margin-top:1.5rem;">
+
+      <!-- Uploaded image -->
+      <div class="card" id="imageCard">
+        <h3 style="margin-bottom:1rem;">🖼 Uploaded Image</h3>
+        <div class="uploaded-img-wrap">
+          <img id="uploadedImg" src="" alt="Analysed skin image" />
+        </div>
+        <p id="imgMeta" style="font-size:0.8rem;margin-top:0.6rem;"></p>
+      </div>
+
+      <!-- Confidence scores -->
+      <div class="card">
+        <h3 style="margin-bottom:0.5rem;">📊 Prediction Confidence</h3>
+        <p id="confidenceText" style="font-size:0.85rem;margin-bottom:0.3rem;"></p>
+        <div class="confidence-track">
+          <div class="confidence-fill" id="confidenceFill"></div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <h4 style="font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:0.8rem;">All Class Scores</h4>
+          <ul class="scores-list" id="scoresList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card rec-card animate-up" style="animation-delay:0.2s;margin-top:1.5rem;" id="recommendationCard">
+      <h3 style="margin-bottom:0.2rem;">💊 Personalised Recommendations</h3>
+      <p id="recSummary" style="margin-bottom:1rem;"></p>
+
+      <ul class="rec-tips" id="recTips"></ul>
+
+      <hr class="divider" style="margin:1.5rem 0;" />
+
+      <div class="ingredients-grid" id="ingredientsGrid"></div>
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+      <a href="/upload" class="btn btn-primary">🔄 Analyse Another Image</a>
+      <a href="/history" class="btn btn-secondary">📋 View History</a>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Smart Skin Care Advisor</p>
+  </footer>
+
+  <script>
+    // ── Load result from sessionStorage ──────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const raw = sessionStorage.getItem('skinResult');
+      if (!raw) {
+        document.getElementById('conditionTitle').textContent = 'No result found.';
+        document.getElementById('conditionBadge').innerHTML =
+          '<p style="color:var(--text-secondary)">Please <a href="/upload">upload an image</a> first.</p>';
+        return;
+      }
+
+      const result  = JSON.parse(raw);
+      const imgData = sessionStorage.getItem('skinImageData');
+
+      renderResult(result, imgData);
+    });
+
+    // ── Render ────────────────────────────────────────────────────────────
+    function renderResult(result, imgData) {
+      const cls        = result.predicted_class;
+      const confidence = result.confidence;
+      const rec        = result.recommendation;
+      const scores     = result.all_scores;
+
+      // Header
+      document.getElementById('conditionTitle').textContent =
+        cls.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+      document.getElementById('conditionBadge').innerHTML =
+        `<span class="condition-badge ${cls}">🔬 ${cls.replace(/_/g, ' ')}</span>`;
+
+      // Uploaded image
+      if (imgData) {
+        document.getElementById('uploadedImg').src = imgData;
+      } else {
+        document.getElementById('imageCard').style.display = 'none';
+      }
+
+      document.getElementById('imgMeta').textContent =
+        `Analysed at ${new Date(result.created_at).toLocaleString()}`;
+
+      // Confidence
+      document.getElementById('confidenceText').textContent =
+        `Confidence: ${confidence.toFixed(1)}%`;
+
+      // Animate bar after short delay
+      setTimeout(() => {
+        document.getElementById('confidenceFill').style.width = `${confidence}%`;
+      }, 200);
+
+      // All scores
+      const scoresList = document.getElementById('scoresList');
+      scores.forEach(s => {
+        const li = document.createElement('li');
+        li.className = 'score-item';
+        li.innerHTML = `
+          <div class="score-row">
+            <span>${s.class.replace(/_/g, ' ')}</span>
+            <span>${s.confidence.toFixed(1)}%</span>
+          </div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:0%;" data-width="${s.confidence}"></div>
+          </div>`;
+        scoresList.appendChild(li);
+      });
+
+      // Animate score bars
+      setTimeout(() => {
+        document.querySelectorAll('.score-bar-fill').forEach(el => {
+          el.style.width = el.dataset.width + '%';
+        });
+      }, 300);
+
+      // Summary
+      document.getElementById('recSummary').textContent = rec.summary || '';
+
+      // Tips
+      const tipsList = document.getElementById('recTips');
+      (rec.tips || []).forEach((tip, i) => {
+        const li = document.createElement('li');
+        li.className = 'rec-tip';
+        li.innerHTML = `<span class="rec-tip-icon">${['✅','💧','🧴','🌿','⚕️'][i % 5]}</span><span>${tip}</span>`;
+        tipsList.appendChild(li);
+      });
+
+      // Ingredients
+      const grid = document.getElementById('ingredientsGrid');
+      if (rec.ingredients_to_use?.length) {
+        const useDiv = document.createElement('div');
+        useDiv.className = 'ingredient-group use';
+        useDiv.innerHTML = `
+          <h4>✅ Ingredients to Use</h4>
+          <div class="ingredient-tags">
+            ${rec.ingredients_to_use.map(i => `<span class="tag use">${i}</span>`).join('')}
+          </div>`;
+        grid.appendChild(useDiv);
+      }
+
+      if (rec.ingredients_to_avoid?.length) {
+        const avoidDiv = document.createElement('div');
+        avoidDiv.className = 'ingredient-group avoid';
+        avoidDiv.innerHTML = `
+          <h4>🚫 Ingredients to Avoid</h4>
+          <div class="ingredient-tags">
+            ${rec.ingredients_to_avoid.map(i => `<span class="tag avoid">${i}</span>`).join('')}
+          </div>`;
+        grid.appendChild(avoidDiv);
+      }
+    }
+  </script>
+</body>
+</html>

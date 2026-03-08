@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Skin Image — Smart Skin Care Advisor</title>
+  <meta name="description" content="Upload your skin image for AI analysis and personalised skincare recommendations." />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="logo-icon">🔬</div>
+      SkinCare AI
+    </div>
+    <ul class="navbar-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/upload" class="active">Analyse</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Upload Section ─────────────────────────────────── -->
+  <div class="container">
+    <div class="upload-section">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <h1 style="font-size:2rem;margin-bottom:0.5rem;">🩺 Analyse Your Skin</h1>
+        <p>Upload a clear JPEG or PNG photo of the affected area. Our AI will diagnose it in seconds.</p>
+      </div>
+
+      <!-- Error alert (hidden by default) -->
+      <div id="errorAlert" class="alert alert-error" style="display:none;">
+        <span>⚠️</span>
+        <span id="errorMsg">Something went wrong.</span>
+      </div>
+
+      <!-- Drop Zone -->
+      <div class="card" style="padding:0;">
+        <div
+          class="drop-zone"
+          id="dropZone"
+          role="button"
+          aria-label="Click to upload or drag and drop your skin image"
+          tabindex="0"
+        >
+          <span class="drop-zone-icon">📷</span>
+          <h3>Drag & Drop your image here</h3>
+          <p>or <strong style="color:var(--accent-light);cursor:pointer;" id="browseLink">click to browse</strong></p>
+          <p style="margin-top:0.6rem;font-size:0.78rem;">Supported: JPEG, PNG, WebP &mdash; Max 10 MB</p>
+        </div>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" />
+
+      <!-- Image Preview -->
+      <div class="preview-box" id="previewBox">
+        <img id="previewImg" src="" alt="Skin image preview" />
+        <p class="preview-meta" id="previewMeta"></p>
+        <div style="display:flex;gap:0.8rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;">
+          <button class="btn btn-secondary" id="changeBtn">↩ Change Image</button>
+          <button class="btn btn-primary btn-large" id="predictBtn">
+            🔍 Run AI Analysis
+          </button>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="card" style="margin-top:2rem;">
+        <h3 style="margin-bottom:1rem;">📋 Tips for Best Results</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;">
+          <li class="rec-tip"><span class="rec-tip-icon">💡</span>Use natural or bright indoor lighting — avoid flash glare.</li>
+          <li class="rec-tip"><span class="rec-tip-icon">📐</span>Hold the camera 15–20 cm from the skin area.</li>
+          <li class="rec-tip"><span class="rec-tip-icon">🎯</span>Centre the affected area within the frame.</li>
+          <li class="rec-tip"><span class="rec-tip-icon">🚫</span>Do not apply makeup or skincare products before photographing.</li>
+          <li class="rec-tip"><span class="rec-tip-icon">⚕️</span>Always consult a dermatologist for serious concerns.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading Overlay ────────────────────────────────── -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loader-card">
+      <div class="spinner"></div>
+      <h3 style="margin-bottom:0.4rem;">Analysing your skin...</h3>
+      <p style="font-size:0.88rem;">Running image through CNN — this takes a moment.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Smart Skin Care Advisor</p>
+  </footer>
+
+  <script src="/static/js/upload.js"></script>
+</body>
+</html>

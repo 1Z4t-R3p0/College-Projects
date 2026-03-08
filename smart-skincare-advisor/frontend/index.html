@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Skin Care Advisor — AI-Powered Skin Analysis</title>
+  <meta name="description" content="Upload a skin image and get instant AI-powered diagnosis and personalised skincare recommendations." />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="logo-icon">🔬</div>
+      SkinCare AI
+    </div>
+    <ul class="navbar-links">
+      <li><a href="/" class="active">Home</a></li>
+      <li><a href="/upload">Analyse</a></li>
+      <li><a href="/history">History</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────── -->
+  <section class="hero container">
+    <div class="hero-badge">✨ CNN-Powered Skin Condition Detection</div>
+    <h1 class="hero-title">Your Personal<br>AI Skin Advisor</h1>
+    <p class="hero-subtitle">
+      Upload a photo of your skin and our machine learning model will detect
+      conditions in seconds — with personalised product recommendations.
+    </p>
+    <div class="hero-actions">
+      <a href="/upload" class="btn btn-primary btn-large">🩺 Analyse My Skin</a>
+      <a href="#how-it-works" class="btn btn-secondary btn-large">How It Works</a>
+    </div>
+  </section>
+
+  <hr class="divider container" />
+
+  <!-- ── Features ───────────────────────────────────────── -->
+  <section class="section container">
+    <h2 class="section-title">What We Detect</h2>
+    <p class="section-subtitle">Our CNN model is trained to identify 7 common skin conditions with high accuracy.</p>
+    <div class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon">🔴</div>
+        <h3>Acne</h3>
+        <p>Detects inflammatory and non-inflammatory acne lesions across face and body.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">🟡</div>
+        <h3>Eczema</h3>
+        <p>Identifies atopic dermatitis patches with characteristic dryness and redness.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">⚠️</div>
+        <h3>Melanoma</h3>
+        <p>Flags suspicious pigmented lesions for urgent dermatological review.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">🟣</div>
+        <h3>Psoriasis</h3>
+        <p>Recognises scaly, silvery plaques characteristic of psoriatic skin disease.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Normal Skin</h3>
+        <p>Confirms healthy skin with no detected abnormalities — keep up the routine!</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">🟤</div>
+        <h3>Dark Spots</h3>
+        <p>Detects hyperpigmentation, sun spots, and post-inflammatory marks.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">💙</div>
+        <h3>Dry Skin</h3>
+        <p>Identifies moisture-depleted skin with rough texture and fine flaking.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider container" />
+
+  <!-- ── How it works ───────────────────────────────────── -->
+  <section class="section container" id="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">Three simple steps from photo to personalised advice.</p>
+    <div class="steps-grid" style="margin-top:2.5rem;">
+      <div class="step card">
+        <div class="step-number">1</div>
+        <h3>Upload</h3>
+        <p>Take or upload a clear photo of the affected skin area (JPEG/PNG).</p>
+      </div>
+      <div class="step card">
+        <div class="step-number">2</div>
+        <h3>Analyse</h3>
+        <p>Our CNN processes the 224×224 image through three convolutional blocks.</p>
+      </div>
+      <div class="step card">
+        <div class="step-number">3</div>
+        <h3>Receive Advice</h3>
+        <p>Get your diagnosis, confidence score and a curated ingredient checklist.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CNN Architecture Info ──────────────────────────── -->
+  <section class="section container">
+    <div class="card" style="max-width:680px;margin:0 auto;text-align:center;">
+      <h2 style="margin-bottom:0.6rem;">⚙️ CNN Architecture</h2>
+      <p style="margin-bottom:1.5rem;">A 3-block convolutional network trained end-to-end on dermoscopy images.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;font-size:0.82rem;">
+        <span class="tag use">Conv2D 3→32</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">BatchNorm + ReLU</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">MaxPool 2×2</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">Conv2D 32→64</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">BatchNorm + ReLU</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">MaxPool 2×2</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">Conv2D 64→128</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">Flatten</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">FC 512</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">FC 128</span>
+        <span style="color:var(--text-secondary);align-self:center;">→</span>
+        <span class="tag use">Softmax (7)</span>
+      </div>
+      <div style="margin-top:1.2rem;">
+        <a href="/upload" class="btn btn-primary">Start Analysis →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2024 Smart Skin Care Advisor</p>
+  </footer>
+
+</body>
+</html>
